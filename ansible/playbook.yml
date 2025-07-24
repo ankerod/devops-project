@@ -1,0 +1,6 @@
+- name: DevOps Project
+  hosts: all
+  become: true
+
+  roles:
+    - docker

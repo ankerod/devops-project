@@ -1,0 +1,39 @@
+---
+- name: Install necessary packages
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+    state: present
+    update_cache: true
+
+- name: Add Docker GPG key
+  ansible.builtin.apt_key:
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+    state: present
+
+- name: Add official Docker repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu(lsb_release -cs) stable"
+    state: present
+
+- name: Install Docker
+  ansible.builtin.apt:
+    name: docker-ce
+    state: present
+    update_cache: true
+
+- name: Ensure Docker service is running
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add user to Docker group
+  ansible.builtin.user:
+    name: "{{ docker_user }}"
+    group: docker
+    append: true
