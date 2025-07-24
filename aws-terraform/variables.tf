@@ -22,6 +22,12 @@ variable "ssh_key_name" {
   default = "id_ed25519"
 }
 
+variable "ssh_private_key_path" {
+  description = "Path to private SSH key for accessing the instance"
+  type        = string
+  default     = "~/.ssh/id_ed25519.pub"
+}
+
 variable "vpc_cidr_block" {
   type    = string
   default = "10.0.0.0/16"

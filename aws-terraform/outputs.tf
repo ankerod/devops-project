@@ -1,4 +1,4 @@
-output "public_ip_instance" {
+output "public_ip" {
   value       = aws_instance.web_server.public_ip
   description = "Public IP adress of the main EC2 instance."
 }

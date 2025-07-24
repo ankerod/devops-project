@@ -13,7 +13,7 @@ provider "aws" {
 
 resource "aws_key_pair" "deployer_key" {
   key_name   = var.ssh_key_name
-  public_key = file("~/.ssh/id_ed25519.pub")
+  public_key = file(var.ssh_private_key_path)
 }
 
 resource "aws_vpc" "main" {
@@ -108,3 +108,11 @@ resource "aws_instance" "web_server" {
     Project = var.project_name
   }
 }
+
+  resource "local_file" "ansible_inventory" {
+    content  = templatefile("${path.module}/ansible/inventory.tpl", {
+      instance_ip = aws_instance.web_server.public_ip
+      ssh_private_key_path = var.ssh_private_key_path
+    })
+    filename = "inventory.ini"
+  }
