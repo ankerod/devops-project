@@ -110,7 +110,7 @@ resource "aws_instance" "web_server" {
 }
 
   resource "local_file" "ansible_inventory" {
-    content  = templatefile("${path.module}/ansible/inventory.tpl", {
+    content  = templatefile("${path.module}/../ansible/inventory_template.tpl", {
       instance_ip = aws_instance.web_server.public_ip
       ssh_private_key_path = var.ssh_private_key_path
     })
