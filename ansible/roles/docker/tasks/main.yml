@@ -1,0 +1,14 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install Docker
+  community.general.snap:
+    name: docker
+    state: present
+    classic: true
+
+- name: Update apt after installing Docker
+  ansible.builtin.apt:
+    update_cache: true
