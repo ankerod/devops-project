@@ -1,2 +1,2 @@
 ---
-docker_user: "ec2-user"
+docker_user: "ubuntu"
