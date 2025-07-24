@@ -12,4 +12,3 @@
 - name: Update apt after installing Docker
   ansible.builtin.apt:
     update_cache: true
-

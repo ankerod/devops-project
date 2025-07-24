@@ -185,7 +185,7 @@ ssh-keygen
 ```
 
 After this, created key, will be saved to `~/.ssh` folder
-### `⚠️ Caution!!!` your created key (not .pub extension) must be on safety!
+#### `⚠️ Caution!!!` your created key (not .pub extension) must be on safety!
 
 ### Step 3. Create varibles.tf
 For easy access with `main.tf` you need define varibles.
@@ -389,3 +389,108 @@ terraform apply
 ```
 
 Use `terraform destroy` to destroy cloud infrastructure.
+
+## Feature 5. Configure Ansible
+If you want to create you cloud infrastructure easy to maintain, you need to use Ansible in a pair with Terraform.
+
+### Step 1. Install Ansible
+
+#### `Prerequisities.` Must be installed Python in your device.
+
+``` bash 
+python3 -m pip install --user ansible
+```
+
+### Step 2. Create Docker variables.
+To demonstrate how Ansible work I will install Docker on my EC2 instance.
+
+#### `Ansible directory`
+
+``` ansible
+ansible/
+    ├── roles/
+    │   └── docker/
+    │       ├── tasks/
+    │       │   └── main.yml
+    │       └── vars/
+    │           └── main.yml  <--- Create this file.
+    └── playbook.yml
+```
+
+### `vars/main.yml`
+
+```
+---
+docker_user: "ec2-user"
+```
+
+
+### Step 3. Create Docker role.
+
+#### `Ansible directory`
+
+```
+ansible/
+    ├── roles/
+    │   └── docker/
+    │       ├── tasks/
+    │       │   └── main.yml <--- Create this file.
+    │       └── vars/
+    │           └── main.yml
+    └── playbook.yml
+```
+
+### `tasks/main.yml`
+
+``` ansible
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install Docker
+  community.general.snap:
+    name: docker
+    state: present
+    classic: true
+
+- name: Update apt after installing Docker
+  ansible.builtin.apt:
+    update_cache: true
+```
+
+### Step 3. Create Ansible playbook
+Now, that connect all our roles I create `playbook.yml` (main Ansible file).
+
+### `playbook.yml`
+
+```
+- name: DevOps Project
+  hosts: all
+  become: true
+
+  roles:
+    - docker
+```
+
+### Step 4. Configure `inventory_template`.
+This file neef to create inventory.ini (this file define public IP of our servers).
+
+### `inventory_template.tpl`
+
+```
+[web_servers]
+${instance_ip} ansible_user=ec2-user ansible_ssh_private_key=${ssh_private_key_path}
+```
+
+### Step 5. Update `main.tf`
+In the end of `main.rf` add this code:
+```
+  resource "local_file" "ansible_inventory" {
+    content  = templatefile("${path.module}/ansible/inventory.tpl", {
+      instance_ip = aws_instance.web_server.public_ip
+      ssh_private_key_path = var.ssh_private_key_path
+    })
+    filename = "inventory.ini"
+  }
+```
