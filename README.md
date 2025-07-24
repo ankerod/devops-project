@@ -494,3 +494,15 @@ In the end of `main.rf` add this code:
     filename = "inventory.ini"
   }
 ```
+
+### Step 6. Run Terraform
+
+``` bash
+terraform apply
+```
+
+### Step 7. Run Ansible
+
+``` bash
+ansible-playbook -i aws-terraform/inventory.ini ansible/playbook.yml -b
+```
