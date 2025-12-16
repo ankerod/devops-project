@@ -36,11 +36,11 @@ resource "digitalocean_droplet" "server-1" {
   ssh_keys = [digitalocean_ssh_key.default-key.fingerprint]
   vpc_uuid = digitalocean_vpc.default.id
   count    = 3
-  tags = {
-    Name        = "web-server-1"
-    Environment = "production"
-    Role        = "web"
-  }
+  tags = [
+    "web-server-1",
+    "production",
+    "web",
+  ]
 }
 
 resource "digitalocean_reserved_ip" "public_ip" {
