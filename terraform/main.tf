@@ -35,11 +35,16 @@ resource "digitalocean_droplet" "server-1" {
   size     = var.do_droplet_size
   ssh_keys = [digitalocean_ssh_key.default-key.fingerprint]
   vpc_uuid = digitalocean_vpc.default.id
-  count = 3
+  count    = 3
+  tags = {
+    Name        = "web-server-1"
+    Environment = "production"
+    Role        = "web"
+  }
 }
 
 resource "digitalocean_reserved_ip" "public_ip" {
-  count = length(digitalocean_droplet.server-1)
-  droplet_id =  digitalocean_droplet.server-1[count.index].id
+  count      = length(digitalocean_droplet.server-1)
+  droplet_id = digitalocean_droplet.server-1[count.index].id
   region     = var.do_region
 }
