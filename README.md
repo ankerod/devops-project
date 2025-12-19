@@ -1,1 +1,1 @@
-# captstone-project
+# devops-project
