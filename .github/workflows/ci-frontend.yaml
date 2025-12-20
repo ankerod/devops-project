@@ -27,10 +27,6 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           projectBaseDir: ./frontend
-          args: >
-            -Dsonar.projectKey=devops-project-frontend
-            -Dsonar.sources=src
-            -Dsonar.exclusions=node_modules/**,build/**
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
       # - uses: SonarSource/sonarqube-quality-gate-action@v1
