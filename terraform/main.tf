@@ -35,7 +35,6 @@ resource "digitalocean_droplet" "server-1" {
   size     = var.do_droplet_size
   ssh_keys = [digitalocean_ssh_key.default-key.fingerprint]
   vpc_uuid = digitalocean_vpc.default.id
-  count    = 3
   tags = [
     "web-server-1",
     "production",
@@ -43,8 +42,27 @@ resource "digitalocean_droplet" "server-1" {
   ]
 }
 
+resource "digitalocean_droplet" "server-sonarcube" {
+  image    = data.digitalocean_image.ubuntu-22-04-x64.id
+  name     = "server-sonarcube"
+  region   = var.do_region
+  size     = var.do_droplet_size
+  ssh_keys = [digitalocean_ssh_key.default-key.fingerprint]
+  vpc_uuid = digitalocean_vpc.default.id
+  tags = [
+    "sonar-server-1",
+    "production",
+  ]
+}
+
 resource "digitalocean_reserved_ip" "public_ip" {
-  count      = length(digitalocean_droplet.server-1)
-  droplet_id = digitalocean_droplet.server-1[count.index].id
+  count      = 1
+  droplet_id = digitalocean_droplet.server-1.id
+  region     = var.do_region
+}
+
+resource "digitalocean_reserved_ip" "public_ip_for_sonercube" {
+  count      = 1
+  droplet_id = digitalocean_droplet.server-sonarcube.id
   region     = var.do_region
 }
