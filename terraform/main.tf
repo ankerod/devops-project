@@ -55,6 +55,19 @@ resource "digitalocean_droplet" "server-sonarcube" {
   ]
 }
 
+resource "digitalocean_droplet" "server-harbor" {
+  image    = data.digitalocean_image.ubuntu-22-04-x64.id
+  name     = "server-harbor"
+  region   = var.do_region
+  size     = var.do_droplet_size
+  ssh_keys = [digitalocean_ssh_key.default-key.fingerprint]
+  vpc_uuid = digitalocean_vpc.default.id
+  tags = [
+    "harbor-server-1",
+    "production",
+  ]
+}
+
 resource "digitalocean_reserved_ip" "public_ip" {
   count      = 1
   droplet_id = digitalocean_droplet.server-1.id
@@ -64,5 +77,11 @@ resource "digitalocean_reserved_ip" "public_ip" {
 resource "digitalocean_reserved_ip" "public_ip_for_sonercube" {
   count      = 1
   droplet_id = digitalocean_droplet.server-sonarcube.id
+  region     = var.do_region
+}
+
+resource "digitalocean_reserved_ip" "public_ip_for_harbor" {
+  count      = 1
+  droplet_id = digitalocean_droplet.server-harbor.id
   region     = var.do_region
 }
