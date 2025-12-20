@@ -29,7 +29,6 @@ jobs:
           projectBaseDir: ./backend
           args: >
             -Dsonar.projectKey=devops-project-backend
-            -Dsonar.projectName=DevOps Project Backend
             -Dsonar.sources=.
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
@@ -37,8 +36,6 @@ jobs:
       #   timeout-minutes: 5
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
-      - uses: actions/checkout@v3
 
       - name: Setup python
         uses: actions/setup-python@v4

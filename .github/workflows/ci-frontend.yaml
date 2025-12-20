@@ -29,7 +29,6 @@ jobs:
           projectBaseDir: ./frontend
           args: >
             -Dsonar.projectKey=devops-project-frontend
-            -Dsonar.projectName=DevOps Project Frontend
             -Dsonar.sources=src
             -Dsonar.exclusions=node_modules/**,build/**
       # If you wish to fail your job when the Quality Gate is red, uncomment the
@@ -38,8 +37,6 @@ jobs:
       #   timeout-minutes: 5
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
-      - uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
