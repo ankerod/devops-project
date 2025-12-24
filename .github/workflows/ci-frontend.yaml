@@ -41,7 +41,7 @@ jobs:
       - name: Login to harbor
         uses: docker/login-action@v3
         with:
-          registry: localhost
+          registry: http://localhost
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
 
