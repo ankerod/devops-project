@@ -1,0 +1,95 @@
+- name: Install Harbor
+  hosts: harbor
+  become: true
+
+  vars:
+      harbor_version: "2.9.3"
+      harbor_install_dir: /opt/harbor
+      harbor_data_volume: /data
+      harbor_hostname: "{{ ansible_host }}"
+      harbor_external_url: "http://{{ ansible_host }}"
+      harbor_http_port: 80
+      harbor_admin_password: "Harbor12345"
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install required packages (Docker, Compose v2, UFW)
+      ansible.builtin.package:
+        name:
+          - curl
+          - tar
+          - gzip
+          - openssl
+          - docker.io
+          - docker-compose-plugin
+          - ufw
+        state: present
+
+    - name: Verify Docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+      failed_when: docker_version.rc != 0
+
+    - name: Ensure data volume exists
+      ansible.builtin.file:
+        path: "{{ harbor_data_volume }}"
+        state: directory
+        mode: "0755"
+
+    - name: Create Harbor install directory
+      ansible.builtin.file:
+        path: "{{ harbor_install_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Download Harbor online installer
+      ansible.builtin.get_url:
+        url: "https://github.com/goharbor/harbor/releases/download/v{{ harbor_version }}/harbor-online-installer-v{{ harbor_version }}.tgz"
+        dest: /tmp/harbor-online-installer.tgz
+        mode: "0644"
+
+    - name: Extract Harbor installer
+      ansible.builtin.unarchive:
+        src: /tmp/harbor-online-installer.tgz
+        dest: "{{ harbor_install_dir }}"
+        remote_src: true
+
+    - name: Render harbor.yml
+      ansible.builtin.template:
+        src: templates/harbor.yml.j2
+        dest: "{{ harbor_install_dir }}/harbor/harbor.yml"
+        mode: "0644"
+
+    - name: Prepare Harbor configuration
+      ansible.builtin.command: ./prepare
+      args:
+        chdir: "{{ harbor_install_dir }}/harbor"
+
+    - name: Install Harbor
+      ansible.builtin.command: ./install.sh
+      args:
+        chdir: "{{ harbor_install_dir }}/harbor"
+
+    - name: Allow HTTP port in UFW
+      community.general.ufw:
+        rule: allow
+        port: "{{ harbor_http_port }}"
+        proto: tcp
+
+    - name: Wait for Harbor to be up
+      ansible.builtin.wait_for:
+        host: "{{ ansible_host }}"
+        port: "{{ harbor_http_port }}"
+        delay: 10
+        timeout: 300
+
+    - name: Display Harbor access information
+      ansible.builtin.debug:
+        msg:
+          - "Harbor installation completed!"
+          - "Access Harbor at: {{ harbor_external_url }}"
+          - "Default credentials - Username: admin, Password: {{ harbor_admin_password }}"
