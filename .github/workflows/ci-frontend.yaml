@@ -50,7 +50,7 @@ jobs:
           TAG=${{ github.ref_name}}
           [ "$TAG" == "main" ] && TAG="latest"
 
-          IMAGE_PATH="localhost/devops-project/frontend
+          IMAGE_PATH="localhost/devops-project/frontend"
 
           docker build -t $IMAGE_PATH:$TAG ./frontend
           docker push $IMAGE_PATH:$TAG
