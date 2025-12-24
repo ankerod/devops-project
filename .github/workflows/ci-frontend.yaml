@@ -52,7 +52,7 @@ jobs:
 
           IMAGE_PATH="localhost/devops-project/frontend"
 
-          docker build -t $IMAGE_PATH:$TAG ./frontend
+          docker build -t $IMAGE_PATH:$TAG .
           docker push $IMAGE_PATH:$TAG
 
       - name: Cleanup old images
